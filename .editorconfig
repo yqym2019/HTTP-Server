@@ -1,0 +1,20 @@
+# EditorConfig is awesome: https://EditorConfig.org
+# coding styles between different editors and IDEs
+# top-most EditorConfig file
+
+root = true
+
+# Apply for all files
+[*]
+
+charset = uft-8
+
+indent_style = space
+indent_size = 2
+
+end_of_line = lf
+insert_final_newline = true
+trim_trailig_whitespace = true
+
+[*.json]
+indent_size = 4
