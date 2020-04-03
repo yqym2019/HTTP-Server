@@ -17,6 +17,8 @@ const stat = promisify(fs.stat);
 const readdir = promisify(fs.readdir);
 
 const conf = require('../config/defaultConfig');
+const mime = require('./mime');
+
 const tplPath = path.join(__dirname, '../template/dir.tpl');
 // readFileSync读出的是一个Buffer，可以在后面强制utf-8，或者强制toString()。
 const source = fs.readFileSync(tplPath);
@@ -26,8 +28,9 @@ module.exports = async function(filePath, req, res) {
     try {
         const stats = await stat(filePath);
         if (stats.isFile()) {
+            const contentType = mime(filePath);
             res.statusCode = 200;
-            res.setHeader('Content-Type', 'text/html');
+            res.setHeader('Content-Type', contentType);
             fs.createReadStream(filePath).pipe(res);
         } else if (stats.isDirectory()) {
             const files = await readdir(filePath);
@@ -37,7 +40,12 @@ module.exports = async function(filePath, req, res) {
             const data = {
                 title: path.basename(filePath),
                 dir: dir ? `/${dir}` : '',
-                files: files
+                files: files.map(file => {
+                    return {
+                        file,
+                        icon: mime(file)
+                    }
+                })
             };
             res.end(template(data));
         }
