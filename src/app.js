@@ -4,7 +4,7 @@ const conf = require('./config/defaultConfig');
 const server = http.createServer((req, res) => {
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/plain');
-    res.end('http-server');
+    res.end('http-server~');
 });
 
 server.listen(conf.port, conf.hostname, () => {
