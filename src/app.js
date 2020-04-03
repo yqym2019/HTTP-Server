@@ -1,6 +1,5 @@
 const http = require('http');
 const path = require('path');
-const fs = require('fs');
 
 const conf = require('./config/defaultConfig');
 const route = require('./helper/route');

@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/Kimsome/HTTP-Server#readme",
   "dependencies": {
+    "handlebars": "^4.7.5",
     "supervisor": "^0.12.0"
   }
 }
