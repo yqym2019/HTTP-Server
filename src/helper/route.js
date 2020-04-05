@@ -19,6 +19,7 @@ const readdir = promisify(fs.readdir);
 const conf = require('../config/defaultConfig');
 const mime = require('./mime');
 const compress = require('./compress');
+const range = require('./range');
 
 const tplPath = path.join(__dirname, '../template/dir.tpl');
 // readFileSync读出的是一个Buffer，可以在后面强制utf-8，或者强制toString()。
@@ -32,8 +33,15 @@ module.exports = async function(filePath, req, res) {
             const contentType = mime(filePath);
             res.statusCode = 200;
             res.setHeader('Content-Type', contentType);
-            // fs.createReadStream(filePath).pipe(res);
-            let rs = fs.createReadStream(filePath);
+            let rs;
+            const { code, start, end } = range(stats.size, req, res);
+            if (code === 200) {
+                res.statusCode = 200;
+                rs = fs.createReadStream(filePath);
+            } else {
+                res.statusCode = code;
+                rs = fs.createReadStream(filePath, { start: start, end: end });
+            }
             if (filePath.match(conf.compress)) {
                 rs = compress(rs, req, res);
             }
