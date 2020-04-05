@@ -20,6 +20,7 @@ const conf = require('../config/defaultConfig');
 const mime = require('./mime');
 const compress = require('./compress');
 const range = require('./range');
+const isFresh = require('./cache');
 
 const tplPath = path.join(__dirname, '../template/dir.tpl');
 // readFileSync读出的是一个Buffer，可以在后面强制utf-8，或者强制toString()。
@@ -33,6 +34,14 @@ module.exports = async function(filePath, req, res) {
             const contentType = mime(filePath);
             res.statusCode = 200;
             res.setHeader('Content-Type', contentType);
+
+            if (isFresh(stats, req, res)) {
+                res.statusCode = 304;
+                console.log('进入缓存机制');
+                res.end();
+                return;
+            }
+
             let rs;
             const { code, start, end } = range(stats.size, req, res);
             if (code === 200) {
